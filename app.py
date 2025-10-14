@@ -9,7 +9,7 @@ from flask import Flask, request, jsonify
         # của phản hồi là application/json.
         #Header Content-Type: application/json đảm bảo rằng client biết phản hồi là JSON và xử lý nó đúng cách.
 import random
-#body = request.get_json()  # Lấy dữ liệu JSON từ body của yêu cầu POST
+
 app = Flask(__name__) # Tạo ứng dụng Flask
 
 # app.config['JSON_AS_ASCII'] = False # Đảm bảo Flask trả về JSON với Unicode (không mã hóa ASCII)
@@ -51,7 +51,7 @@ def get_proverb():
 @app.route('/tinh-tong', methods=['POST'])
 def calculate_sum():
     try:
-        body = request.get_json()
+        body = request.get_json()  # Lấy dữ liệu JSON từ body của yêu cầu POST
         if not isinstance(body, dict):
             return jsonify({'success': False, 'message': 'Body phải là JSON'}), 400
 
