@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import re
+import random
 app = Flask(__name__)
 
 from flask_cors import CORS
@@ -30,6 +31,16 @@ def danhnhap():
     except Exception as e:
         return jsonify({'success':False,'message':str(e)}),500
 
+
+@app.route('/tao-so',methods=['GET'])
+def taoSo():
+    try:
+        soA = random.randint(1,100)
+        soB = random.randint(1,100)
+        op = random.choice(['+','-','*','/'])
+        return jsonify({'success':True,'soA':soA,'soB':soB,'phepToan':op}),200
+    except Exception as e:
+        return jsonify({'success':False,'message':str(e)}),500
 
 # Health check
 @app.route('/', methods=['GET'])
