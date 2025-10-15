@@ -22,28 +22,9 @@ function json_response($data, $status = 200) {
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 }
-
-// “kho” thành ngữ
-$PROVERBS = [
-    "Có công mài sắt, có ngày nên kim.",
-    "Đi một ngày đàng, học một sàng khôn.",
-    "Chậm mà chắc.",
-    "Nói phải củ cải cũng nghe.",
-    "Học ăn, học nói, học gói, học mở.",
-    "Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao.",
-    "Biết người biết ta, trăm trận trăm thắng.",
-    "Không thầy đố mày làm nên.",
-    "Uống nước nhớ nguồn."
-];
-
-// Tuyến: GET /danh-ngon
-if ($method === 'GET' && $uri === '/danh-ngon') {
-    $pick = $PROVERBS[array_rand($PROVERBS)];
-    json_response(['success' => true, 'data' => $pick]);
-}
-
-// Tuyến: POST /tinh-tong
-if ($method === 'POST' && $uri === '/tinh-tong') {
+$OP = ['+','-','*','/'];
+// // Tuyến: POST /ket-qua
+if ($method === 'POST' && $uri === '/ket-qua') {
     $raw = file_get_contents('php://input');
     $body = json_decode($raw, true);
 
@@ -53,17 +34,64 @@ if ($method === 'POST' && $uri === '/tinh-tong') {
 
     $a = $body['a'] ?? null;
     $b = $body['b'] ?? null;
+    $op = $body['operation'] ?? null;
+    $ketqua = $body['ketqua'] ?? null;
+    //tính toán
+    $sum=0;
+    if($op=='+'){
+         $sum = $a + $b; 
+    }else if($op=='-'){
+         $sum = $a - $b; 
+    }else  if($op=='*'){
+         $sum = $a * $b; 
+    }else if($op=='/'){
+        if($b==0){
+            json_response(['success'=> false,'message'=> 'Giá trị b không được bằng 0'],400 );
+        }
+        $sum = $a / $b; 
+    } 
+    $ra = random_int(1,100);
+    $rb = random_int(1,100);
+    $rop = $OP[random_int(0,3)];  
+    if($ketqua==$sum){
+        json_response(['success' => true, 'a' => $ra, 'b'=> $rb,'operation'=> $rop]);
+    }else{
+        json_response(['success' => false, 'a' => $ra, 'b'=> $rb,'operation'=> $rop],400);
+    }
+   
+}
+//Đăng nhập
+if ($method === 'POST' && $uri === '/dang-nhap') {
+    $raw = file_get_contents('php://input');
+    $body = json_decode($raw, true);
 
-    if ($a === null || $b === null) {
-        json_response(['success' => false, 'message' => 'Thiếu tham số a hoặc b'], 400);
+    if (!is_array($body)) {
+        json_response(['success' => false, 'message' => 'Body phải là JSON'], 400);
     }
 
-    if (!is_numeric($a) || !is_numeric($b)) {
-        json_response(['success' => false, 'message' => 'a và b phải là số'], 400);
+    $mssv = $body['mssv'] ?? null;
+    $hoten= $body['hoten'] ?? null;
+
+    if ($mssv === "" || $hoten === "") {
+        json_response(['success' => false, 'message' => 'Không được để trống ô dữ liệu'], 400);
+    }
+    if (is_numeric($hoten)) {
+        json_response(['success' => false, 'message' => 'Họ tên phải là chữ'], 400);
     }
 
-    $sum = $a + $b; // PHP tự ép kiểu số
-    json_response(['success' => true, 'data' => $sum]);
+    if($mssv==="123" && $hoten ==="aaa") {
+         json_response(['success' => true, 'message' => 'Đăng nhập thành công']);
+    }else{
+         json_response(['success' => false, 'message' => 'Đăng nhập thất bại'],400);
+    }
+}
+//Tuyến: GET /phep-tinh
+
+if ($method === 'GET' && $uri === '/phep-tinh') {
+    $a = random_int(1,100);
+    $b = random_int(1,100);
+    $op = $OP[random_int(0,3)];  
+    json_response(['success' => true, 'a' => $a, 'b'=> $b,'operation'=> $op]);
 }
 
 // Health check
